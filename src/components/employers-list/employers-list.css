@@ -5,3 +5,9 @@
     box-shadow: 15px 15px 30px rgba(0,0,0, .15);
     color: #fff;
 }
+.app-list-text {
+    line-height: 35px;
+    font-size: 20px;
+    padding: 15px 20px;
+    text-align: center;
+}

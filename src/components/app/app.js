@@ -9,45 +9,46 @@ import './app.css'
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchEmployers, employersCreated, employersDelete, employersUpdate } from '../employers-list/employersSlice';
+import {useGetEmployeesQuery, useCreateEmployeesMutation, useDeleteEmployeesMutation, useTogglePropMutation, useGetEmployeeQuery} from '../../api/apiSlice';
+
 
 
 const App = () => {
 
-    const dispatch = useDispatch();
-
-    // const [employers, setEmployers] = useState([]);
-    const employers = useSelector(state => state.employers.employers);
     const [term, setTerm] = useState('');
     const [activeFilter, setActiveFilter] = useState('all');
-
-    useEffect(() => {
-        // axios.get("http://localhost:3001/employers")
-        //     .then(data => setEmployers(data.data));
-        dispatch(fetchEmployers());
-    }, []);
+    const {
+        data: employees = [],
+        isFetching,
+        isLoading,
+        isError,
+        isSuccess,
+        error
+    } = useGetEmployeesQuery();
+    const [employeesDelete, {deleteLoading = isLoading}] = useDeleteEmployeesMutation();
+    const [employeesCreated, {createLoading = isFetching}] = useCreateEmployeesMutation();
+    const [toggleProp, {togglePropLoading = isLoading}] = useTogglePropMutation();
+    // let employeeId = '';
+    // const {data: employee = []} = useGetEmployeeQuery(employeeId);
 
     const deleteEmployers = (id) => {
-        axios.delete(`http://localhost:3001/employers/${id}`)
-            .then(dispatch(employersDelete(id)))
-            .catch(err => console.log(err));      
+             employeesDelete(id).unwrap();
     }
 
     const addNewEmployers = (name, salary) => {
-        const newEmployers = {
+        const newEmployees = {
             name,
             salary,
             increase: false,
             promotion: false,
             id: uuidv4()
         }
-        axios.post("http://localhost:3001/employers", newEmployers)
-            .then(dispatch(employersCreated(newEmployers)))
-            .catch(err => console.log(err));
+        employeesCreated(newEmployees).unwrap();
     }
 
     const onToggleProp = (id, prop, newSalary) => {
             let servId = 0;
-            const newEmplList = employers.map((item, i) => {
+            const newEmplList = employees.map((item, i) => {
                 if (item.id === id) {
                     servId = i;
                     if (prop === 'salary') {
@@ -58,8 +59,10 @@ const App = () => {
                 }
                 return item;
             });
-            axios.patch(`http://localhost:3001/employers/${id}/`, {[prop]: newEmplList[servId][prop]})
-                .then(dispatch(employersUpdate(newEmplList)));
+            // employeeId = id;
+            toggleProp({id, [prop]: newEmplList[servId][prop]}).unwrap();
+            // axios.patch(`http://localhost:3001/employees/${id}/`, {[prop]: newEmplList[servId][prop]})
+                
     }
     
 
@@ -91,9 +94,9 @@ const App = () => {
         setActiveFilter(activeFilter);
     }
 
-    const totalEmployees = employers.length;
-    const increase = employers.filter(item => item.increase === true).length;
-    const visibleListEmployers = filterPost(searchEmp(employers, term), activeFilter);
+    const totalEmployees = employees.length;
+    const increase = employees.filter(item => item.increase === true).length;
+    const visibleListEmployers = filterPost(searchEmp(employees, term), activeFilter);
 
     return (
         <div className="app">
@@ -109,8 +112,10 @@ const App = () => {
             <EmployersList 
             data={visibleListEmployers}
             onDelete={deleteEmployers}
-            onToggleProp={onToggleProp}/>
-            <EmployersAddForm addNew={addNewEmployers}/>
+            onToggleProp={onToggleProp}
+            isLoading={isLoading}
+            isError={isError}/>
+            <EmployersAddForm addNew={addNewEmployers} isLoading={createLoading}/>
         </div>
     );
 

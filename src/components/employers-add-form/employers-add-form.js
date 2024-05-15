@@ -2,7 +2,7 @@ import {useState} from 'react';
 
 import './employers-add-form.css';
 
-const EmployersAddForm = ({addNew}) => {
+const EmployersAddForm = ({addNew, isLoading}) => {
     // constructor(props) {
     //     super(props);
     //     this.state = {
@@ -50,16 +50,18 @@ const EmployersAddForm = ({addNew}) => {
                         placeholder="Как его зовут?"
                         name="name"
                         value={name}
+                        disabled={isLoading}
                         onChange={onValueChange}/>
                     <input type="number"
                         className="form-control new-post-label"
                         placeholder="З/П в $?"
                         name="salary"
                         value={salary}
+                        disabled={isLoading}
                         onChange={onValueChange}/>
     
                     <button type="submit"
-                            className="btn btn-outline-light">Добавить</button>
+                            className="btn btn-outline-light" disabled={isLoading}>Добавить</button>
                 </form>
                 <span className={validClassName}>Введите больше 3 букв в имя или добавьте зп</span>
             </div>        

@@ -1,16 +1,16 @@
 {
-  "employers": [
+  "employees": [
     {
       "name": "John C.",
-      "salary": 800,
-      "increase": true,
+      "salary": "800",
+      "increase": false,
       "promotion": true,
       "id": "1"
     },
     {
       "name": "Alex M.",
       "salary": "30500",
-      "increase": false,
+      "increase": true,
       "promotion": false,
       "id": "2"
     },
@@ -18,15 +18,8 @@
       "name": "Carl W.",
       "salary": "5000",
       "increase": false,
-      "promotion": true,
+      "promotion": false,
       "id": "3"
-    },
-    {
-      "id": "bde155a2-5609-4f15-91fa-c1de86f5bc57",
-      "name": "Frank",
-      "salary": "4605",
-      "increase": false,
-      "promotion": false
     }
   ]
 }
