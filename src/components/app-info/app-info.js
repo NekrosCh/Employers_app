@@ -1,7 +1,13 @@
 import './app-info.css';
+import { useGetEmployeesQuery} from "../../api/apiSlice";
 
-const AppInfo = (props) => {
-    const {total, increase} = props;
+const AppInfo = () => {
+
+    const {
+        data: employees = []
+    } = useGetEmployeesQuery();
+    const total = employees.length;
+    const increase = employees.filter(item => item.increase === true).length;
     return (
         <div className="app-info">
             <h1>Учёт сотрудников в компании N</h1>

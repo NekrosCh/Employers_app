@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { searchTerm } from '../app-filter/filterSlice';
 
 import './search-panel.css';
 
-const SearchPanel = (props) => {
-    const {onUpdateSearch} = props;
+const SearchPanel = () => {
     const [termSearch, setTermSearch] = useState('');
+    const dispatch = useDispatch();
     const UpdateSearch = (e) => {
         const term = e.target.value;
         setTermSearch(term);
-        onUpdateSearch(term);
+        dispatch(searchTerm(term))
     }
 
         return (

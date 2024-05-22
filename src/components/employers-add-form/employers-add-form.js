@@ -1,20 +1,28 @@
 import {useState} from 'react';
+import {useCreateEmployeesMutation} from '../../api/apiSlice';
+import { v4 as uuidv4 } from 'uuid';
+
+
 
 import './employers-add-form.css';
 
-const EmployersAddForm = ({addNew, isLoading}) => {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         name: '',
-    //         salary: '',
-    //         valid: true
-    //     };
-    // }
+const EmployersAddForm = () => {
+    
     const [name, setName] = useState('');
     const [salary, setSalary] = useState('');
     const [valid, setValid] = useState(true);
+    const [employeesCreated, {isLoading}] = useCreateEmployeesMutation();
 
+    const addNewEmployers = (name, salary) => {
+        const newEmployees = {
+            name,
+            salary,
+            increase: false,
+            promotion: false,
+            id: uuidv4()
+        }
+        employeesCreated(newEmployees).unwrap();
+    }
     const onValueChange = (e) => {
             if(e.target.name === 'name') {
                 setName(e.target.value);
@@ -26,7 +34,7 @@ const EmployersAddForm = ({addNew, isLoading}) => {
     const onSubmit = (e) => {
         e.preventDefault();
         if(name.length > 2 && salary.length > 0){
-            addNew(name, salary);
+            addNewEmployers(name, salary);
             setName('');
             setSalary('');
             setValid(true);
