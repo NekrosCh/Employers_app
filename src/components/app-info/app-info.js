@@ -1,11 +1,22 @@
 import './app-info.css';
-import { useGetEmployeesQuery} from "../../api/apiSlice";
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 const AppInfo = () => {
 
+    const getEmployees = async () => {
+        const {data} = await axios.get("http://localhost:3001/employees");
+        return data;
+    }
     const {
-        data: employees = []
-    } = useGetEmployeesQuery();
+        data: employees = [],
+    } = useQuery({
+        queryKey: ['employees'], 
+        queryFn: getEmployees,
+        options: {
+            keepPreviousData: true
+        }
+    });
     const total = employees.length;
     const increase = employees.filter(item => item.increase === true).length;
     return (

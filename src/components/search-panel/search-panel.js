@@ -1,16 +1,14 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { searchTerm } from '../app-filter/filterSlice';
-
+import { useContext, useState } from 'react';
 import './search-panel.css';
+import dataContext from '../../context/context';
 
 const SearchPanel = () => {
+    const {searchTerm} = useContext(dataContext);
     const [termSearch, setTermSearch] = useState('');
-    const dispatch = useDispatch();
     const UpdateSearch = (e) => {
         const term = e.target.value;
         setTermSearch(term);
-        dispatch(searchTerm(term))
+        searchTerm(term);
     }
 
         return (

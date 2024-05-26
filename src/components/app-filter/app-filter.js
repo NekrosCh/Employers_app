@@ -1,11 +1,9 @@
+import { useContext, useState } from 'react';
 import './app-filter.css';
-import { useSelector, useDispatch } from 'react-redux';
-import { toggleActiveFilter } from './filterSlice';
+import dataContext from '../../context/context';
 
 const AppFilter = () => {
-  const activeFilter = useSelector((state) => state.filter.activeFilter);
-  const dispatch = useDispatch();
-
+  const {activeFilter, toggleFilter} = useContext(dataContext);
   const buttonsData = [
     {name: 'all', label: 'Все сотрудники'},
     {name: 'promotion', label: 'На повышение'},
@@ -20,7 +18,7 @@ const AppFilter = () => {
       className={`btn ${clazz}`}
       type="button"
       key={name}
-      onClick={() => dispatch(toggleActiveFilter(name))}>
+      onClick={() => toggleFilter(name)}>
           {label}
     </button>
     )

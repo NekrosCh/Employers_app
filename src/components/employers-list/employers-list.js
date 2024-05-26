@@ -1,19 +1,55 @@
 import EmployersListItem from "../employers-list-item/employers-list-item";
 import Spinner from "../spinner/Spinner";
-import { useGetEmployeesQuery, useDeleteEmployeesMutation, useTogglePropMutation } from "../../api/apiSlice";
-
 import './employers-list.css';
-import { useSelector } from "react-redux";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import dataContext from "../../context/context";
+import { useContext } from "react";
 
 const EmployersList = () => {
+    const queryClient = useQueryClient();
+    const {activeFilter, term} =useContext(dataContext);
+
+    const getEmployees = async () => {
+        const {data} = await axios.get("http://localhost:3001/employees");
+
+        return data;
+    }
+
     const {
         data: employees = [],
         isLoading,
         isError
-    } = useGetEmployeesQuery();
-    const [employeesDelete] = useDeleteEmployeesMutation();
-    const [toggleProp] = useTogglePropMutation();
-    const {activeFilter, term} = useSelector(state => state.filter);
+    } = useQuery({
+        queryKey: ['employees'], 
+        queryFn: getEmployees,
+        options: {
+            keepPreviousData: true
+        }
+    });
+
+    const deleteEmploees = useMutation({
+        mutationFn: async ({id}) => {
+            await axios.delete(`http://localhost:3001/employees/${id}`)
+            .then(res => console.log(`Employee ${res.data.name} - deleted`))
+            .catch(err => console.log(err)); 
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['employees']})
+        }
+    });
+
+    const toggleProp = useMutation({
+        mutationFn: async ({id, ...prop}) => {
+            await axios.patch(`http://localhost:3001/employees/${id}/`, prop)
+                .then((res) => console.log(`Data changed ${res}`))
+                .catch(err => console.log(err))
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['employees']})
+        }
+    });
+
 
     if (isLoading) {
         return <Spinner/>;
@@ -49,7 +85,7 @@ const EmployersList = () => {
             }
             return item;
         });
-        toggleProp({id, [prop]: newEmplList[servId][prop]}).unwrap();
+        toggleProp.mutate({id, [prop]: newEmplList[servId][prop]});
             
 }
 
@@ -71,7 +107,7 @@ const EmployersList = () => {
             <EmployersListItem 
             key={id} 
             {...itemProps}
-            onDelete={() => employeesDelete(id)}
+            onDelete={() => deleteEmploees.mutate({id})}
             onToggleProp={(e) => onToggleProp(id, e.currentTarget.getAttribute('data-toggle'), e.target.value)}/>
         )
     });

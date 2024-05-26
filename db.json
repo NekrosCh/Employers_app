@@ -4,7 +4,7 @@
       "name": "John C.",
       "salary": "800",
       "increase": false,
-      "promotion": false,
+      "promotion": true,
       "id": "1"
     },
     {
@@ -20,6 +20,13 @@
       "increase": false,
       "promotion": true,
       "id": "3"
+    },
+    {
+      "id": "5f7f0dcc-0e01-4c5e-8c13-928e010deca7",
+      "name": "Alex",
+      "salary": "7868",
+      "increase": false,
+      "promotion": false
     }
   ]
 }

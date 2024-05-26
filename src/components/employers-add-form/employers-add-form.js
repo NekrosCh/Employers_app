@@ -1,17 +1,25 @@
 import {useState} from 'react';
-import {useCreateEmployeesMutation} from '../../api/apiSlice';
 import { v4 as uuidv4 } from 'uuid';
-
-
-
 import './employers-add-form.css';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 
 const EmployersAddForm = () => {
-    
+    const queryClient = useQueryClient();
     const [name, setName] = useState('');
     const [salary, setSalary] = useState('');
     const [valid, setValid] = useState(true);
-    const [employeesCreated, {isLoading}] = useCreateEmployeesMutation();
+    const employeesCreated = useMutation({
+        mutationFn: async (newEmployees) => {
+           await axios.post("http://localhost:3001/employees", newEmployees)
+                .then(() => console.log('New employee create'))
+                .catch((err) => console.log(err));
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['employees']});
+        }
+    })
+
 
     const addNewEmployers = (name, salary) => {
         const newEmployees = {
@@ -21,7 +29,7 @@ const EmployersAddForm = () => {
             promotion: false,
             id: uuidv4()
         }
-        employeesCreated(newEmployees).unwrap();
+        employeesCreated.mutate(newEmployees);
     }
     const onValueChange = (e) => {
             if(e.target.name === 'name') {
@@ -58,18 +66,18 @@ const EmployersAddForm = () => {
                         placeholder="Как его зовут?"
                         name="name"
                         value={name}
-                        disabled={isLoading}
+                        disabled={employeesCreated.isPending}
                         onChange={onValueChange}/>
                     <input type="number"
                         className="form-control new-post-label"
                         placeholder="З/П в $?"
                         name="salary"
                         value={salary}
-                        disabled={isLoading}
+                        disabled={employeesCreated.isPending}
                         onChange={onValueChange}/>
     
                     <button type="submit"
-                            className="btn btn-outline-light" disabled={isLoading}>Добавить</button>
+                            className="btn btn-outline-light" disabled={employeesCreated.isPending}>Добавить</button>
                 </form>
                 <span className={validClassName}>Введите больше 3 букв в имя или добавьте зп</span>
             </div>        
